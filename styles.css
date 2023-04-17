@@ -1,0 +1,67 @@
+body {
+    font-family: 'Lobster', cursive;
+    font-size: 25px;
+}
+input {
+    width: 65%;
+    height: 50px;
+    border: solid 1px gray;
+    border-radius: 5px;
+}
+
+select,
+.btn {
+    width: 70%;
+    height: 50px;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+.accordion-button:not(.collapsed){
+    color: white;
+    background-color: #212529;
+    font-size: 30px;
+}
+.accordion-button {
+    font-size: 30px;
+    
+}
+.accordion-button:focus {
+    border-color: white;
+}
+.form-select {
+    font-size: 20px;
+    text-transform: uppercase;
+}
+.viewResult {
+    background-color: white;
+    height: 50px;
+    font-size: 24px;
+    border-radius: 3px;
+    padding-top: 5px;
+    display: none;
+}
+.inputEnd:disabled {
+    border-color: rgb(79, 77, 77);
+    
+}
+.dateEnd{
+    display: none;
+    
+}
+.presets {
+    text-align: left;
+    margin-left: 20px;
+}
+.clear {
+    font-size: 15px;
+    width: 70px;
+}
+#week, #month, #none {
+    width: 20px;
+    height: 20px;
+}
+    @media (max-width: 372px) {
+ body {
+    font-size: 12px;
+ }   
+}

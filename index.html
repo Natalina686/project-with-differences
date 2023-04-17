@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container-md bg-light text-center">
+        <div>
+            <h1 class="text-dark mt-5 mb-5">TIME MEASURE</h1>
+            <div class="row">
+                <div class="col-sm ">
+                    <span class="text-dark me-4 ">START</span>
+                    <input class = "bg-light text-dark mt-3 mb-3 inputStart " type="date" name="start" id="start" value="DD.MM.YY">
+                </div>
+                <div class="col-sm">
+                    <span class="text-dark me-4 "> END </span>
+                    <input class="bg-light text-dark mt-3 mb-3 inputEnd" type="date" name="end" id="end" value="" disabled>
+                </div>
+            </div>
+            <div class="col-sm-2 presets mt-5 mb-5">
+                <span class=" text-dark preset"></span>
+                <input type="radio" name="preset" id="none">
+                <label class="text-dark" for="week">none</label>
+                <br>
+                <input type="radio" name="preset" id="week">
+                <label class="text-dark" for="week">week</label>
+                 <br>
+                <input type="radio" name="preset" id="month">
+                <label class="text-dark" for="week">month</label>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <select class="form-select form-select-sm mt-3 mb-3 bg-light text-dark selectedDays" aria-label=".form-select-sm example">
+                        <option value="allDay" selected>all days</option>
+                        <option value="weekdays">weekdays</option>
+                        <option value="weekends">weekends</option>
+                    </select>
+                </div>
+                <div class="col-sm">
+                    <select class="form-select form-select-sm mt-3 mb-3 bg-light text-dark dimension" aria-label=".form-select-sm example">
+                        <option value="days" selected>days</option>
+                        <option value="hours">hours</option>
+                        <option value="minuts">minuts</option>
+                        <option value="seconds">seconds</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm ">
+                    <button type="button" class="btn btn-outline-dark mt-3 mb-3 calculate">Calculate</button>
+                </div>
+                <div class="col-sm-1">
+                    <button type="button" class="btn btn-outline-dark mt-3 mb-3 clear">CLEAR</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 viewResult">
+                    <div>RESULT:</div>
+                    <div></div>
+                </div>
+                <br>
+                <div class="col-sm-12 mt-5">
+                    <div class="accordion accordion-flush history" id="accordionExample">
+                        <div class="accordion-item  bg-light">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button btn-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                                    aria-expanded="true" aria-controls="collapseOne">
+                                    HISTORY
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                                data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table class="table table-dark table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">START</th>
+                                                <th scope="col">END</th>
+                                                <th scope="col">RESULT</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="tableLocal">
+                                        
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
+        <script src="./script.js"></script>
+</body>
+</html>
