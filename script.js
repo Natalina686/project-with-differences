@@ -1,43 +1,36 @@
 'use strict';
+
 const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 const HOUR_IN_MILLISECONDS = 60 * 60 * 1000;
 const MIN_IN_MILLISECONDS = 60 * 1000;
 const SEC_IN_MILLISECONDS = 1000;
 
-let inputStart = document.querySelector(".inputStart");
-let inputEnd = document.querySelector(".inputEnd");
-let persetWeek = document.querySelector('#week');
-let persetMonth = document.querySelector("#month");
-let persetNone = document.querySelector('#none');
-let inputSelectedDays = document.querySelector(".selectedDays"); 
-let inputDimension = document.querySelector(".dimension");
-let inputPreset = document.querySelector(".preset")
-let calculate = document.querySelector(".calculate");
-let viewResult = document.querySelector(".viewResult");
-let startForLocal = document.querySelector(".startLocal");
-let endForLocal = document.querySelector(".endLocal");
-let resultForLocal = document.querySelector(".resultLocal");
-let tableLocal = document.querySelector(".tableLocal");
-let dateEnd = document.querySelector(".dateEnd");
-let clear = document.querySelector('.clear');
+const inputStart = document.querySelector(".inputStart");
+const inputEnd = document.querySelector(".inputEnd");
+const inputSelectedDays = document.querySelector(".selectedDays");
+const inputDimension = document.querySelector(".dimension");
+const inputPreset = document.querySelector(".preset");
+const calculate = document.querySelector(".calculate");
+const viewResult = document.querySelector(".viewResult");
+const dateEnd = document.querySelector(".dateEnd");
+const presetWeek = document.querySelector("#week");
+const presetMonth = document.querySelector("#month");
+const presetNone = document.querySelector("#none");
+const startForLocal = document.querySelector(".startLocal");
+const endForLocal = document.querySelector(".endLocal");
+const resultForLocal = document.querySelector(".resultLocal");
+const tableLocal = document.querySelector(".tableLocal");
+let clear = document.querySelector(".clear");
 let dimension = inputDimension.value;
 let result;
 let resultData = [];
-let j = 0;
 
-if (localStorage.getItem('result') !== null) {
-  resultData = JSON.parse(localStorage.getItem('result'));
-  for (j = 0; j < resultData.length; j++) {
-    let newline = document.createElement("tr");
-    newline.className = `${j}`;
-    newline.innerHTML = `<th scope="row">${j + 1}</th> <td>${resultData[j].startStorage}</td><td>${resultData[j].endStorage}</td><td>${resultData[j].result}</td>`;
-    tableLocal.prepend(newline);
-  } 
-} 
+
 
 inputStart.addEventListener("change", () => {
   inputEnd.disabled = false;
-})
+});
+
 inputEnd.addEventListener("change", () => {
   if (Date.parse(inputEnd.value) < Date.parse(inputStart.value)) {
     calculate.disabled = true;
@@ -46,38 +39,76 @@ inputEnd.addEventListener("change", () => {
     calculate.disabled = false;
     dateEnd.style.display = "none";
   }
-})
-persetWeek.addEventListener("change", () => {
-  let d = new Date(inputStart.value);
-  let inputEndTemp = new Date(d.setDate(d.getDate() + 7));
+});
+
+presetWeek.addEventListener("change", () => {
+  let date = new Date(inputStart.value);
+  let inputEndTemp = new Date(date.setDate(date.getDate() + 7));
   inputEnd.value = formatDate(inputEndTemp);
-  console.log("inputEnd", inputEndTemp)
-})
-persetMonth.addEventListener("change", () => {
-  let d = new Date(inputStart.value);
-  let inputEndTemp = new Date(d.setMonth(d.getMonth() + 1));
+  console.log("inputEnd", inputEndTemp);
+  inputEnd.disabled = false;
+});
+
+presetMonth.addEventListener("change", () => {
+  let date = new Date(inputStart.value);
+  let inputEndTemp = new Date(date.setMonth(date.getMonth() + 1));
   inputEnd.value = formatDate(inputEndTemp);
   console.log(inputEnd.value);
-})
-persetNone.addEventListener("change", () => {
+  inputEnd.disabled = false;
+});
+
+presetNone.addEventListener("change", () => {
   inputEnd.value = "";
-})
+});
 
 if (inputStart.value === "" || inputEnd.value === "") {
   calculate.disabled = true;
 }
-clear.addEventListener('click', () => {
-  inputStart.value ="";
+
+clear.addEventListener("click", () => {
+  inputStart.value = "";
   inputEnd.value = "";
   inputEnd.disabled = true;
-})
+});
+
+
+const renderHistoryTable = () => {
+  const resultData = JSON.parse(localStorage.getItem("result"));
+
+  tableLocal.innerHTML = "";
+
+  resultData.forEach((resultObj, index) => {
+    let newline = document.createElement("tr");
+    newline.className = index;
+    newline.innerHTML = `<th scope="row">${index + 1}</th> <td>${
+      resultObj.startStorage}</td><td>${resultObj.endStorage}</td><td>${resultObj.result}</td>`;
+    tableLocal.prepend(newline);
+  });
+};
+if (localStorage.getItem("result") !== null) {
+  renderHistoryTable();
+}
+
+const storeResultInLocalStorage = (result) => {
+  const resultData = JSON.parse(localStorage.getItem("result")) || [];
+
+  if (resultData.length >= 10) {
+    resultData.shift();
+  }
+
+  resultData.push({
+    startStorage: inputStart.value,
+    endStorage: inputEnd.value,
+    result: result
+  });
+
+  localStorage.setItem("result", JSON.stringify(resultData));
+};
 
 calculate.addEventListener("click", () => {
-  let start = Date.parse(inputStart.value);
-  let end = Date.parse(inputEnd.value);
   let selectedDays = inputSelectedDays.value;
   let dimension = inputDimension.value;
-  let resultMillisec = end - start;
+  let resultMillisec = Date.parse(inputEnd.value) - Date.parse(inputStart.value);
   let result;
   if (selectedDays === "allDay") {
     switch (dimension) {
@@ -94,97 +125,57 @@ calculate.addEventListener("click", () => {
         result = `${resultMillisec / DAY_IN_MILLISECONDS} DAYS`;
         break;
     }
+
     viewResult.innerHTML = `RESULT: ${result}`;
   }
   if (selectedDays === "weekends") {
-    let resultDay = resultMillisec / 86400000;
-    let day = 0;
-    let currentlyDay;
-    let getday = new Date();
-    for (let i = 0; i <= resultDay; i++) {
-      getday.setTime(start + 86400000 * i);
-      currentlyDay = getday.getDay();
-      if (currentlyDay === 0 || currentlyDay === 6) {
-        day++;
-      }
-    }
-    result = convertTime(day);
-    console.log(result);
+    result = convertTime(countWeekendsDays(inputStart.value, inputEnd.value));
     viewResult.innerHTML = `RESULT: ${result}`;
-  }
+    }
+  
   if (selectedDays === "weekdays") {
-    let resultDay = resultMillisec / 86400000;
-    let day = 0;
-    let currentlyDay;
-    let getday = new Date();
-    for (let i = 0; i <= resultDay; i++) {
-      getday.setTime(start + 86400000 * i);
-      currentlyDay = getday.getDay();
-      if (currentlyDay === 1 || currentlyDay === 2 || currentlyDay === 3|| currentlyDay === 4|| currentlyDay === 5) {
-        day++;
-      }
-    }
-    result = convertTime(day);
+    result = convertTime(countWeekdaysDays(inputStart.value, inputEnd.value));
     viewResult.innerHTML = `RESULT: ${result}`;
-  }
-  let resultStorage = {
-    startStorage: inputStart.value,
-    endStorage: inputEnd.value,
-    result: result,
-  }
-  
-  if (resultData.length >= 10) {
-    resultData.shift();
-  }
-  resultData.push(resultStorage);
+    }
 
-  localStorage.setItem("result", JSON.stringify(resultData));
-  console.log(resultData);
-  console.log();
-  let newLineData = JSON.parse(localStorage.getItem('result'));
-  if (result.length <= 10) {
-    let newline = document.createElement("tr");
-    newline.className = `${j}`;
-    newline.innerHTML = `<th scope="row">${j + 1}</th> <td>${newLineData[j].startStorage}</td><td>${newLineData[j].endStorage}</td><td>${newLineData[j].result}</td>`;
-    tableLocal.prepend(newline);
-    j++;
-  } else {
-    
-  }
+
+  storeResultInLocalStorage(result);
   
-})
+  renderHistoryTable();
+});
 
 function viewResultField() {
   viewResult.style.display = "block";
-};
-
-calculate.addEventListener('click', viewResultField);
+}
+calculate.addEventListener("click", viewResultField); 
 
 function formatDate(inputEndTemp) {
   const date = new Date(inputEndTemp);
-  let DD = date.getDate();
-   if (DD <10) { 
-    DD = "0"+ DD;
+
+  let day = date.getDate();
+  if (day < 10) {
+    day = "0" + day;
   }
-  let MO = date.getMonth() + 1;
-  if (MO <10) { 
-    MO = "0"+ MO;
+
+  let month = date.getMonth() + 1;
+  if (month <10) { 
+    month = "0"+ month;
   }
-  let YYYY= date.getFullYear();
-  let inputEnd = YYYY + "-" + MO + "-" + DD ;
-  return inputEnd;
+
+ let year= date.getFullYear();
+ return `${day} - ${month} -${year}`;
 }
 
 function convertTime(day) {
   switch (inputDimension.value) {
     case "seconds":
-      result = `${day * 86400} SECONDS`;
+      result = `${day * SECONDS_IN_DAY} SECONDS`;
       break;
     case "minuts":
-      result = `${day * 1440} MINUTS`;
+      result = `${day * MINUTES_IN_DAY} MINUTS`;
       break;
     case "hours":
-      result = `${day * 24} HOURS`;
+      result = `${day * HOURS_IN_DAY} HOURS`;
       break;
     case "days":
       result = `${day} DAYS`;
@@ -192,4 +183,44 @@ function convertTime(day) {
   }
   console.log(result);
   return result;
+}
+
+function isWeekend(date) {
+  const dayOfWeek = new Date(date).getDay();
+  return dayOfWeek === 0 || dayOfWeek === 6;
+}
+function countWeekendsDays(start, end) {
+  let resultMillisec = new Date(end) - new Date(start);
+  let resultDay = resultMillisec / DAY_IN_MILLISECONDS;
+
+  let day = 0;
+
+  for (let i = 0; i <= resultDay; i++) {
+    const newDate = new Date();
+    newDate.setTime(Date.parse(start) + DAY_IN_MILLISECONDS * i);
+
+    if (isWeekend(newDate)) {
+      day++;
+    }
+  }
+
+  return day;
+}
+
+function countWeekdaysDays(start, end) {
+  let resultMillisec = new Date(end) - new Date(start);
+  let resultDay = resultMillisec / DAY_IN_MILLISECONDS;
+
+  let day = 0;
+
+  for (let i = 0; i <= resultDay; i++) {
+    const newDate = new Date();
+    newDate.setTime(Date.parse(start) + DAY_IN_MILLISECONDS * i);
+
+    if (!isWeekend(newDate)) {
+      day++;
+    }
+  }
+
+  return day;
 }
