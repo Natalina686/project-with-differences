@@ -26,29 +26,6 @@ let result;
 let resultData = [];
 
 
-
-inputStart.addEventListener("change", () => {
-  inputEnd.disabled = false;
-});
-
-inputEnd.addEventListener("change", () => {
-  if (Date.parse(inputEnd.value) < Date.parse(inputStart.value)) {
-    calculate.disabled = true;
-    dateEnd.style.display = "block";
-  } else {
-    calculate.disabled = false;
-    dateEnd.style.display = "none";
-  }
-});
-
-presetWeek.addEventListener("change", () => {
-  let date = new Date(inputStart.value);
-  let inputEndTemp = new Date(date.setDate(date.getDate() + 7));
-  inputEnd.value = formatDate(inputEndTemp);
-  console.log("inputEnd", inputEndTemp);
-  inputEnd.disabled = false;
-});
-
 presetMonth.addEventListener("change", () => {
   let date = new Date(inputStart.value);
   let inputEndTemp = new Date(date.setMonth(date.getMonth() + 1));
@@ -65,13 +42,6 @@ if (inputStart.value === "" || inputEnd.value === "") {
   calculate.disabled = true;
 }
 
-clear.addEventListener("click", () => {
-  inputStart.value = "";
-  inputEnd.value = "";
-  inputEnd.disabled = true;
-});
-
-
 const renderHistoryTable = () => {
   const resultData = JSON.parse(localStorage.getItem("result"));
 
@@ -84,10 +54,11 @@ const renderHistoryTable = () => {
       resultObj.startStorage}</td><td>${resultObj.endStorage}</td><td>${resultObj.result}</td>`;
     tableLocal.prepend(newline);
   });
+  if (localStorage.getItem("result") !== null) {
+    renderHistoryTable();
+  }
 };
-if (localStorage.getItem("result") !== null) {
-  renderHistoryTable();
-}
+
 
 const storeResultInLocalStorage = (result) => {
   const resultData = JSON.parse(localStorage.getItem("result")) || [];
@@ -105,50 +76,10 @@ const storeResultInLocalStorage = (result) => {
   localStorage.setItem("result", JSON.stringify(resultData));
 };
 
-calculate.addEventListener("click", () => {
-  let selectedDays = inputSelectedDays.value;
-  let dimension = inputDimension.value;
-  let resultMillisec = Date.parse(inputEnd.value) - Date.parse(inputStart.value);
-  let result;
-  if (selectedDays === "allDay") {
-    switch (dimension) {
-      case "seconds":
-        result = `${resultMillisec / SEC_IN_MILLISECONDS} SECONDS`;
-        break;
-      case "minuts":
-        result = `${resultMillisec / MIN_IN_MILLISECONDS} MINUTS`;
-        break;
-      case "hours":
-        result = `${resultMillisec / HOUR_IN_MILLISECONDS} HOURS`;
-        break;
-      case "days":
-        result = `${resultMillisec / DAY_IN_MILLISECONDS} DAYS`;
-        break;
-    }
-
-    viewResult.innerHTML = `RESULT: ${result}`;
-  }
-  if (selectedDays === "weekends") {
-    result = convertTime(countWeekendsDays(inputStart.value, inputEnd.value));
-    viewResult.innerHTML = `RESULT: ${result}`;
-    }
-  
-  if (selectedDays === "weekdays") {
-    result = convertTime(countWeekdaysDays(inputStart.value, inputEnd.value));
-    viewResult.innerHTML = `RESULT: ${result}`;
-    }
-
-
-  storeResultInLocalStorage(result);
-  
-  renderHistoryTable();
-});
-
 function viewResultField() {
   viewResult.style.display = "block";
 }
-calculate.addEventListener("click", viewResultField); 
-
+ 
 function formatDate(inputEndTemp) {
   const date = new Date(inputEndTemp);
 
@@ -224,3 +155,73 @@ function countWeekdaysDays(start, end) {
 
   return day;
 }
+
+
+
+
+inputStart.addEventListener("change", () => {
+  inputEnd.disabled = false;
+});
+
+inputEnd.addEventListener("change", () => {
+  if (Date.parse(inputEnd.value) < Date.parse(inputStart.value)) {
+    calculate.disabled = true;
+    dateEnd.style.display = "block";
+  } else {
+    calculate.disabled = false;
+    dateEnd.style.display = "none";
+  }
+});
+
+presetWeek.addEventListener("change", () => {
+  let date = new Date(inputStart.value);
+  let inputEndTemp = new Date(date.setDate(date.getDate() + 7));
+  inputEnd.value = formatDate(inputEndTemp);
+  console.log("inputEnd", inputEndTemp);
+  inputEnd.disabled = false;
+});
+clear.addEventListener("click", () => {
+  inputStart.value = "";
+  inputEnd.value = "";
+  inputEnd.disabled = true;
+});
+
+calculate.addEventListener("click", () => {
+  let selectedDays = inputSelectedDays.value;
+  let dimension = inputDimension.value;
+  let resultMillisec = Date.parse(inputEnd.value) - Date.parse(inputStart.value);
+  let result;
+  if (selectedDays === "allDay") {
+    switch (dimension) {
+      case "seconds":
+        result = `${resultMillisec / SEC_IN_MILLISECONDS} SECONDS`;
+        break;
+      case "minuts":
+        result = `${resultMillisec / MIN_IN_MILLISECONDS} MINUTS`;
+        break;
+      case "hours":
+        result = `${resultMillisec / HOUR_IN_MILLISECONDS} HOURS`;
+        break;
+      case "days":
+        result = `${resultMillisec / DAY_IN_MILLISECONDS} DAYS`;
+        break;
+    }
+
+    
+  }
+  if (selectedDays === "weekends") {
+    result = convertTime(countWeekendsDays(inputStart.value, inputEnd.value));
+    
+    }
+  
+  if (selectedDays === "weekdays") {
+    result = convertTime(countWeekdaysDays(inputStart.value, inputEnd.value));
+    
+    }
+
+    viewResult.innerHTML = `RESULT: ${result}`;
+  storeResultInLocalStorage(result);
+  
+  renderHistoryTable();
+});
+calculate.addEventListener("click", viewResultField);
