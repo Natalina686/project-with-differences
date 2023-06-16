@@ -53,13 +53,13 @@ const renderHistoryTable = () => {
     newline.innerHTML = `<th scope="row">${index + 1}</th> <td>${
       resultObj.startStorage}</td><td>${resultObj.endStorage}</td><td>${resultObj.result}</td>`;
     tableLocal.prepend(newline);
-    if (localStorage.getItem("result") !== null) {
-      renderHistoryTable();
-    }
+    
   });
   
 };
-
+if (localStorage.getItem("result") !== null) {
+  renderHistoryTable();
+}
 
 const storeResultInLocalStorage = (result) => {
   const resultData = JSON.parse(localStorage.getItem("result")) || [];
