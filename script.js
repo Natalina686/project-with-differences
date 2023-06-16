@@ -57,9 +57,9 @@ const renderHistoryTable = () => {
   });
   
 };
-if (localStorage.getItem("result") !== null) {
-  renderHistoryTable();
-}
+// if (localStorage.getItem("result") !== null) {
+//   renderHistoryTable();
+// }
 
 const storeResultInLocalStorage = (result) => {
   const resultData = JSON.parse(localStorage.getItem("result")) || [];
